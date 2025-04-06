@@ -8,9 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { BarChart, Activity, Wallet, Settings, History, Edit, Star, Package, Users } from "lucide-react";
+import { useToast } from '@/hooks/use-toast';
 
 const Profile = () => {
+  const { toast } = useToast();
   const [activeRole, setActiveRole] = useState<'user' | 'developer'>('user');
   
   // Mock data - would be fetched from a backend in a real application
@@ -40,7 +43,7 @@ const Profile = () => {
     { id: 4, date: '2025-04-01', model: 'CodeAssist', amount: -8, type: 'expense' },
   ];
   
-  const developerModels = [
+  const [developerModels, setDeveloperModels] = useState([
     { 
       id: 1, 
       name: 'TextGenius Pro', 
@@ -86,7 +89,28 @@ const Profile = () => {
       usageCount: 125,
       rating: 3.9
     },
-  ];
+  ]);
+
+  // Function to toggle the active status of a model
+  const toggleModelStatus = (modelId: number) => {
+    setDeveloperModels(models => 
+      models.map(model => 
+        model.id === modelId 
+          ? { ...model, active: !model.active } 
+          : model
+      )
+    );
+
+    // Find the model that was toggled to show in toast
+    const model = developerModels.find(m => m.id === modelId);
+    if (model) {
+      const newStatus = !model.active;
+      toast({
+        title: `Model status updated`,
+        description: `${model.name} is now ${newStatus ? 'active' : 'inactive'}`,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -326,7 +350,12 @@ const Profile = () => {
                           {model.rating} <Star className="h-3 w-3 text-yellow-500 ml-1" />
                         </div>
                         <div className="col-span-2 text-sm">{model.usageCount}</div>
-                        <div className="col-span-2">
+                        <div className="col-span-2 flex items-center gap-2">
+                          <Switch 
+                            checked={model.active} 
+                            onCheckedChange={() => toggleModelStatus(model.id)}
+                            className="data-[state=checked]:bg-green-500"
+                          />
                           <Badge variant={model.active ? "default" : "outline"} className={model.active ? "bg-green-500/20 text-green-500 hover:bg-green-500/30" : ""}>
                             {model.active ? "Active" : "Inactive"}
                           </Badge>
