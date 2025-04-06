@@ -11,10 +11,16 @@ interface AIModelChatProps {
   isRented: boolean;
 }
 
+// Define the message type to be clearer about the role restrictions
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  text: string;
+};
+
 const AI_SYSTEM_PROMPT = "You are Code Assist, an AI coding assistant on BrahmAIstra. You help users with coding questions in Python, JavaScript, and C++. Only respond if the user has successfully rented this AI model. If the user tries to use the tool without renting, politely tell them to rent the model first to access this feature. Once rented, answer coding questions with helpful code, explanations, and debugging tips. Be friendly, helpful, and beginner-friendly.";
 
 const AIModelChat: React.FC<AIModelChatProps> = ({ isOpen, onClose, isRented }) => {
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -22,20 +28,23 @@ const AIModelChat: React.FC<AIModelChatProps> = ({ isOpen, onClose, isRented }) 
 
     // If not rented, show rental message
     if (!isRented) {
-      setMessages([
+      // Create a typed array to ensure type safety
+      const newMessages: ChatMessage[] = [
         ...messages, 
         { role: 'user', text: inputMessage },
         { 
           role: 'assistant', 
           text: "Please rent this AI model first to access the Code Assist feature. Click 'Rent Now' to get started!" 
         }
-      ]);
+      ];
+      
+      setMessages(newMessages);
       setInputMessage('');
       return;
     }
 
-    // Normal chat logic would go here
-    const newMessages = [
+    // Normal chat logic for rented models
+    const newMessages: ChatMessage[] = [
       ...messages, 
       { role: 'user', text: inputMessage },
       { 
