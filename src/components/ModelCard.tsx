@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Star, Clock, Tag, Users } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import CodeAssistDialog from './CodeAssistDialog';
 
 export type ModelType = {
   id: string;
@@ -33,6 +34,7 @@ interface ModelCardProps {
 const ModelCard: React.FC<ModelCardProps> = ({ model, featured = false }) => {
   const { toast } = useToast();
   const [isRented, setIsRented] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   const handleRentModel = () => {
     toast({
@@ -41,6 +43,9 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, featured = false }) => {
     });
     setIsRented(true);
   };
+
+  const isCodeAssist = model.title.toLowerCase().includes('codeassist') || 
+                       model.title.toLowerCase().includes('code assist');
 
   return (
     <Card className={`cyberpunk-card transition-all duration-300 hover:-translate-y-1 overflow-hidden ${featured ? 'border-atom/50' : ''}`}>
@@ -88,14 +93,32 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, featured = false }) => {
         </div>
       </CardContent>
       
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
+        {isCodeAssist && isRented ? (
+          <Button 
+            className="w-full bg-secondary hover:bg-secondary/80 text-atom" 
+            size="sm"
+            onClick={() => setDialogOpen(true)}
+          >
+            Try Now
+          </Button>
+        ) : null}
+        
         <Button 
           className="w-full bg-atom hover:bg-atom-dark" 
           size="sm"
           onClick={handleRentModel}
+          disabled={isRented}
         >
-          Rent Now
+          {isRented ? "Rented" : "Rent Now"}
         </Button>
+        
+        {isCodeAssist && (
+          <CodeAssistDialog 
+            open={dialogOpen} 
+            onOpenChange={setDialogOpen} 
+          />
+        )}
       </CardFooter>
     </Card>
   );

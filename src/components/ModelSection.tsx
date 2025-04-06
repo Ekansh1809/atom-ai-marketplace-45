@@ -5,6 +5,20 @@ import ModelCard, { ModelType } from './ModelCard';
 
 const sampleModels: ModelType[] = [
   {
+    id: '1',
+    title: 'CodeAssist',
+    description: 'AI-powered coding assistant that helps you write clean code in Python and C++',
+    imageUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800',
+    category: 'Code Generation',
+    price: 8,
+    rating: 4.8,
+    usageCount: 12480,
+    developer: {
+      name: 'DevAI Solutions',
+      id: 'dev3'
+    }
+  },
+  {
     id: '2',
     title: 'ImageCraft AI',
     description: 'Create stunning images from text prompts with fine details',
