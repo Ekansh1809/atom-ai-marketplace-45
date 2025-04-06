@@ -10,7 +10,6 @@ import Profile from "./pages/Profile";
 import Developers from "./pages/Developers";
 import Documentation from "./pages/Documentation";
 import Pricing from "./pages/Pricing";
-import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -31,7 +30,6 @@ const App = () => (
           <Route path="/developers" element={<Developers />} />
           <Route path="/docs" element={<Documentation />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
