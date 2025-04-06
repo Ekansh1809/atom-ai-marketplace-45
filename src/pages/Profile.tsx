@@ -9,9 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { BarChart, Activity, Wallet, Settings, History, Edit, Star, Package, Users } from "lucide-react";
+import { BarChart, Activity, Wallet, Settings, History, Edit, Star, Package, Users, Clock, Tag, Key } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import AddModelModal from '@/components/AddModelModal';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+// Define model type
+interface DeveloperModel {
+  id: number;
+  name: string;
+  category: string;
+  monetizationType?: 'time-based' | 'lifetime' | 'ownership';
+  price: number;
+  active: boolean;
+  usageCount: number;
+  rating: number;
+  apiKey?: string;
+  description?: string;
+  usageLimit?: number;
+}
 
 const Profile = () => {
   const { toast } = useToast();
@@ -45,11 +61,12 @@ const Profile = () => {
     { id: 4, date: '2025-04-01', model: 'CodeAssist', amount: -8, type: 'expense' },
   ];
   
-  const [developerModels, setDeveloperModels] = useState([
+  const [developerModels, setDeveloperModels] = useState<DeveloperModel[]>([
     { 
       id: 1, 
       name: 'TextGenius Pro', 
       category: 'Text Generation',
+      monetizationType: 'time-based',
       price: 5,
       active: true,
       usageCount: 8640,
@@ -59,7 +76,8 @@ const Profile = () => {
       id: 2, 
       name: 'CodeAssist+', 
       category: 'Code Generation',
-      price: 8,
+      monetizationType: 'lifetime',
+      price: 80,
       active: true,
       usageCount: 3105,
       rating: 4.6
@@ -68,6 +86,7 @@ const Profile = () => {
       id: 3, 
       name: 'Summarizer Pro', 
       category: 'Text Generation',
+      monetizationType: 'time-based',
       price: 3,
       active: true,
       usageCount: 2340,
@@ -77,7 +96,8 @@ const Profile = () => {
       id: 4, 
       name: 'Legacy Parser', 
       category: 'Data Analysis',
-      price: 6,
+      monetizationType: 'ownership',
+      price: 600,
       active: false,
       usageCount: 1250,
       rating: 4.2
@@ -86,11 +106,45 @@ const Profile = () => {
       id: 5, 
       name: 'Experimental NLP', 
       category: 'Text Generation',
+      monetizationType: 'time-based',
       price: 10,
       active: false,
       usageCount: 125,
       rating: 3.9
     },
+  ]);
+  
+  const [purchasedModels, setPurchasedModels] = useState([
+    {
+      id: 101,
+      name: 'VoiceClone Master',
+      developer: 'SoundAI',
+      category: 'Audio Generation',
+      monetizationType: 'lifetime',
+      purchaseDate: '2025-03-15',
+      expiryDate: null,
+      usageCount: 47
+    },
+    {
+      id: 102,
+      name: 'DataAnalyst Pro',
+      developer: 'DataMinds',
+      category: 'Data Analysis',
+      monetizationType: 'time-based',
+      purchaseDate: '2025-04-01',
+      expiryDate: '2025-05-01',
+      usageCount: 12
+    },
+    {
+      id: 103,
+      name: 'ImageCraft AI',
+      developer: 'PixelMinds',
+      category: 'Image Generation',
+      monetizationType: 'ownership',
+      purchaseDate: '2025-02-20',
+      expiryDate: null,
+      usageCount: 215
+    }
   ]);
 
   // Function to toggle the active status of a model
@@ -115,11 +169,30 @@ const Profile = () => {
   };
 
   // Function to add a new model
-  const handleAddModel = (newModel: any) => {
+  const handleAddModel = (newModel: DeveloperModel) => {
     setDeveloperModels(prevModels => [...prevModels, newModel]);
     
-    // Update developer stats
     // In a real app, this would be updated from the backend
+  };
+
+  // Helper function to display monetization type in a user-friendly way
+  const getMonetizationLabel = (type: string | undefined) => {
+    switch(type) {
+      case 'time-based': return 'Time-Based Rental';
+      case 'lifetime': return 'Lifetime Access';
+      case 'ownership': return 'Full Ownership';
+      default: return 'Standard';
+    }
+  };
+
+  // Helper function to get badge color based on monetization type
+  const getMonetizationBadgeColor = (type: string | undefined) => {
+    switch(type) {
+      case 'time-based': return 'bg-blue-500/20 text-blue-500 hover:bg-blue-500/30';
+      case 'lifetime': return 'bg-purple-500/20 text-purple-500 hover:bg-purple-500/30';
+      case 'ownership': return 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30';
+      default: return '';
+    }
   };
 
   return (
@@ -214,6 +287,53 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </div>
+            
+            {/* AI Crate Section */}
+            <Card className="bg-secondary/10 border-border mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl">
+                  <Package className="mr-2 h-5 w-5 text-atom" />
+                  AI Crate
+                </CardTitle>
+                <CardDescription>Your purchased and rented AI models</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Model</TableHead>
+                      <TableHead>Developer</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Purchased</TableHead>
+                      <TableHead>Expires</TableHead>
+                      <TableHead>Usage</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {purchasedModels.map((model) => (
+                      <TableRow key={model.id}>
+                        <TableCell className="font-medium">{model.name}</TableCell>
+                        <TableCell>{model.developer}</TableCell>
+                        <TableCell>
+                          <Badge className={getMonetizationBadgeColor(model.monetizationType)}>
+                            {getMonetizationLabel(model.monetizationType)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{model.purchaseDate}</TableCell>
+                        <TableCell>{model.expiryDate || '∞'}</TableCell>
+                        <TableCell>{model.usageCount}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm">
+                            Use
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
             
             {/* Recent Transactions */}
             <Card className="bg-secondary/10 border-border">
@@ -340,29 +460,35 @@ const Profile = () => {
               <CardContent>
                 <div className="rounded-md border overflow-hidden">
                   <div className="grid grid-cols-12 bg-secondary/20 p-4 text-sm font-medium">
-                    <div className="col-span-4">Model</div>
+                    <div className="col-span-3">Model</div>
                     <div className="col-span-2">Category</div>
+                    <div className="col-span-2">Monetization</div>
                     <div className="col-span-1">Price</div>
                     <div className="col-span-1">Rating</div>
-                    <div className="col-span-2">Usage</div>
+                    <div className="col-span-1">Usage</div>
                     <div className="col-span-2">Status</div>
                   </div>
                   
                   <div className="divide-y divide-border">
                     {developerModels.map((model) => (
                       <div key={model.id} className="grid grid-cols-12 items-center p-4">
-                        <div className="col-span-4 font-medium flex items-center">
+                        <div className="col-span-3 font-medium flex items-center">
                           {model.name}
                           <Button variant="ghost" size="icon" className="ml-2 h-8 w-8">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="col-span-2 text-sm">{model.category}</div>
+                        <div className="col-span-2 text-sm">
+                          <Badge className={getMonetizationBadgeColor(model.monetizationType)}>
+                            {getMonetizationLabel(model.monetizationType)}
+                          </Badge>
+                        </div>
                         <div className="col-span-1 text-sm">{model.price} ATOM</div>
                         <div className="col-span-1 text-sm flex items-center">
                           {model.rating} <Star className="h-3 w-3 text-yellow-500 ml-1" />
                         </div>
-                        <div className="col-span-2 text-sm">{model.usageCount}</div>
+                        <div className="col-span-1 text-sm">{model.usageCount}</div>
                         <div className="col-span-2 flex items-center gap-2">
                           <Switch 
                             checked={model.active} 
@@ -376,6 +502,49 @@ const Profile = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* API Keys Section */}
+            <Card className="bg-secondary/10 border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center text-xl">
+                  <Key className="mr-2 h-5 w-5 text-atom" />
+                  API Keys
+                </CardTitle>
+                <CardDescription>Manage your model API keys</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {developerModels
+                    .filter(model => model.apiKey)
+                    .map((model) => (
+                      <div key={`key-${model.id}`} className="p-4 border border-border rounded-md">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">{model.name}</p>
+                            <p className="text-xs text-muted-foreground">API Key</p>
+                          </div>
+                          <Badge variant={model.active ? "default" : "outline"} className={model.active ? "bg-green-500/20 text-green-500 hover:bg-green-500/30" : ""}>
+                            {model.active ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="bg-secondary/50 py-1 px-3 rounded font-mono text-sm overflow-x-auto whitespace-nowrap flex-1">
+                            {model.apiKey || 'bai_' + model.id + 'x'.repeat(24)}
+                          </div>
+                          <Button size="sm" variant="outline">Copy</Button>
+                          <Button size="sm" variant="outline" className="text-red-500 hover:text-red-700">Revoke</Button>
+                        </div>
+                      </div>
+                  ))}
+                  
+                  {developerModels.filter(model => model.apiKey).length === 0 && (
+                    <div className="text-center py-6 text-muted-foreground">
+                      <p>Add a new model to generate API keys</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
