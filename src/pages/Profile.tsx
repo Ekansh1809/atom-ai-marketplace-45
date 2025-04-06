@@ -11,10 +11,12 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { BarChart, Activity, Wallet, Settings, History, Edit, Star, Package, Users } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import AddModelModal from '@/components/AddModelModal';
 
 const Profile = () => {
   const { toast } = useToast();
   const [activeRole, setActiveRole] = useState<'user' | 'developer'>('user');
+  const [addModelModalOpen, setAddModelModalOpen] = useState(false);
   
   // Mock data - would be fetched from a backend in a real application
   const userData = {
@@ -110,6 +112,14 @@ const Profile = () => {
         description: `${model.name} is now ${newStatus ? 'active' : 'inactive'}`,
       });
     }
+  };
+
+  // Function to add a new model
+  const handleAddModel = (newModel: any) => {
+    setDeveloperModels(prevModels => [...prevModels, newModel]);
+    
+    // Update developer stats
+    // In a real app, this would be updated from the backend
   };
 
   return (
@@ -289,7 +299,7 @@ const Profile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{developerData.activeModels}/{developerData.models}</div>
+                  <div className="text-2xl font-bold">{developerModels.filter(m => m.active).length}/{developerModels.length}</div>
                   <p className="text-xs text-muted-foreground">Currently available</p>
                 </CardContent>
               </Card>
@@ -302,7 +312,7 @@ const Profile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{developerData.totalUsage}</div>
+                  <div className="text-2xl font-bold">{developerModels.reduce((sum, model) => sum + model.usageCount, 0)}</div>
                   <p className="text-xs text-muted-foreground">Across all models</p>
                 </CardContent>
               </Card>
@@ -310,7 +320,10 @@ const Profile = () => {
             
             {/* Add New Model Button */}
             <div className="flex justify-end mb-4">
-              <Button className="bg-atom hover:bg-atom-dark">
+              <Button 
+                className="bg-atom hover:bg-atom-dark"
+                onClick={() => setAddModelModalOpen(true)}
+              >
                 Add New Model
               </Button>
             </div>
@@ -385,6 +398,13 @@ const Profile = () => {
       </main>
       
       <Footer />
+      
+      {/* Add Model Modal */}
+      <AddModelModal 
+        open={addModelModalOpen} 
+        onOpenChange={setAddModelModalOpen}
+        onModelAdded={handleAddModel}
+      />
     </div>
   );
 };
