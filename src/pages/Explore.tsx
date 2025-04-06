@@ -1,4 +1,4 @@
-
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ModelCard, { ModelType } from "@/components/ModelCard";
@@ -7,25 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useState } from "react";
 
-// Import sample models from ModelSection (would typically come from API)
-// Same sample data as in ModelSection
 const sampleModels: ModelType[] = [
-  {
-    id: '1',
-    title: 'TextGenius Pro',
-    description: 'Advanced text generation model with creative writing capabilities',
-    imageUrl: 'https://images.unsplash.com/photo-1655720406483-fd769f9f5bbc?q=80&w=800',
-    category: 'Text Generation',
-    price: 5,
-    rating: 4.8,
-    usageCount: 12648,
-    developer: {
-      name: 'AI Labs Inc.',
-      id: 'dev1'
-    }
-  },
   {
     id: '2',
     title: 'ImageCraft AI',
@@ -168,7 +151,6 @@ const Explore = () => {
   const [minRating, setMinRating] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   
-  // Filter and sort models
   const filteredModels = sampleModels.filter((model) => {
     const matchesSearch = model.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           model.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -179,19 +161,17 @@ const Explore = () => {
     return matchesSearch && matchesCategory && matchesPrice && matchesRating;
   });
   
-  // Sort models
   const sortedModels = [...filteredModels].sort((a, b) => {
     switch (sortBy) {
       case "popular": return b.usageCount - a.usageCount;
       case "rated": return b.rating - a.rating;
       case "price_low": return a.price - b.price;
       case "price_high": return b.price - a.price;
-      case "newest": return a.id > b.id ? -1 : 1; // Using ID as a proxy for date
+      case "newest": return a.id > b.id ? -1 : 1;
       default: return 0;
     }
   });
   
-  // Reset filters
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
@@ -205,7 +185,6 @@ const Explore = () => {
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Section */}
         <div className="bg-secondary/30 py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
@@ -214,7 +193,6 @@ const Explore = () => {
                 Find the perfect AI model for your needs from our vast marketplace
               </p>
               
-              {/* Search */}
               <div className="relative max-w-2xl mx-auto">
                 <Input
                   type="text"
@@ -229,11 +207,8 @@ const Explore = () => {
           </div>
         </div>
         
-        {/* Main Content */}
         <div className="container mx-auto px-4 py-12">
-          {/* Filter Controls */}
           <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Categories */}
             <div className="md:max-w-md overflow-x-auto flex-shrink-0">
               <Tabs 
                 value={selectedCategory} 
@@ -261,7 +236,6 @@ const Explore = () => {
             </div>
             
             <div className="flex items-center gap-3 mt-4 md:mt-0">
-              {/* Sort Dropdown */}
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -274,7 +248,6 @@ const Explore = () => {
                 ))}
               </select>
               
-              {/* Filter Toggle Button */}
               <Button 
                 variant="outline" 
                 size="sm"
@@ -285,14 +258,12 @@ const Explore = () => {
                 Filters
               </Button>
               
-              {/* Results Count */}
               <span className="text-sm text-muted-foreground">
                 {sortedModels.length} results
               </span>
             </div>
           </div>
           
-          {/* Advanced Filters (Collapsible) */}
           {showFilters && (
             <div className="mb-8 glass-card p-6 rounded-lg">
               <div className="flex items-center justify-between mb-4">
@@ -307,7 +278,6 @@ const Explore = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Category Select */}
                 <div>
                   <label className="block text-sm font-medium mb-2">Category</label>
                   <select 
@@ -323,7 +293,6 @@ const Explore = () => {
                   </select>
                 </div>
                 
-                {/* Price Range */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Price Range: {priceRange[0]} - {priceRange[1]} ATOM
@@ -339,7 +308,6 @@ const Explore = () => {
                   />
                 </div>
                 
-                {/* Minimum Rating */}
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Minimum Rating: {minRating}★
@@ -367,7 +335,6 @@ const Explore = () => {
             </div>
           )}
           
-          {/* Model Results */}
           {sortedModels.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedModels.map((model) => (

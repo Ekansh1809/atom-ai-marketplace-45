@@ -1,25 +1,9 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ModelCard, { ModelType } from './ModelCard';
 
-// Sample model data
 const sampleModels: ModelType[] = [
-  {
-    id: '1',
-    title: 'TextGenius Pro',
-    description: 'Advanced text generation model with creative writing capabilities',
-    imageUrl: 'https://images.unsplash.com/photo-1655720406483-fd769f9f5bbc?q=80&w=800',
-    category: 'Text Generation',
-    price: 5,
-    rating: 4.8,
-    usageCount: 12648,
-    developer: {
-      name: 'AI Labs Inc.',
-      id: 'dev1'
-    }
-  },
   {
     id: '2',
     title: 'ImageCraft AI',
